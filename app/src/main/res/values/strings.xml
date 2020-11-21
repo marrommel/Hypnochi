@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Hypnochi</string>
+    <string name="tab_text_1">Handout</string>
+    <string name="tab_text_2">Hypnosen</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="red_curtain">red curtain</string>
+    <string name="_9d_23h_59m_59s">9d 23h 59m 59s</string>
+    <string name="die_show_beginnt_in">Die Show beginnt in</string>
+    <string name="die_show_beginnt">Die Show beginnt!</string>
+    <string name="hypnochi">Hypnochi</string>
+</resources>

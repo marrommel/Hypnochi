@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f9f9f9"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/totalEven"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="#58AC6A"
+        android:longClickable="true"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:textSize="55sp"
+            android:text="gerade"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/totalUneven"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="#695097"
+        android:longClickable="true"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:textSize="55sp"
+            android:text="ungerade"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/whoDidIt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="40dp"
+            android:layout_marginHorizontal="20dp"
+            app:cardCornerRadius="10dp"
+            android:elevation="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#040404"
+                    android:textStyle="bold"
+                    android:textSize="40sp"
+                    android:text="Entscheide frei:"/>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/even"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginHorizontal="20dp"
+                    app:cardCornerRadius="30dp"
+                    app:cardBackgroundColor="#58AC6A"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textColor="#24402E"
+                        android:layout_marginVertical="50dp"
+                        android:textStyle="bold"
+                        android:textSize="45sp"
+                        android:text="gerade"/>
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#4E4B4B"
+                    android:textStyle="bold"
+                    android:textSize="40sp"
+                    android:text="oder"/>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/uneven"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="30dp"
+                    android:layout_marginHorizontal="20dp"
+                    app:cardCornerRadius="30dp"
+                    app:cardBackgroundColor="#695097"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textColor="#3A0B51"
+                        android:layout_marginVertical="50dp"
+                        android:textStyle="bold"
+                        android:textSize="45sp"
+                        android:text="ungerade"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
