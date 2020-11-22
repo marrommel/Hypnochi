@@ -1,4 +1,4 @@
-package Service;
+package com.example.hypnochi.Service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,7 +9,7 @@ public class NotificationActionService extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        context.sendBroadcast(new Intent("Tracks_Tracks")
+        context.sendBroadcast(new Intent("TRACKS_TRACKS")
             .putExtra("actionname", intent.getAction()));
     }
 }

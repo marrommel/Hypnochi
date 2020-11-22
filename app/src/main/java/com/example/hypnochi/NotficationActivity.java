@@ -15,6 +15,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.hypnochi.Service.OnClearFromRecentService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,37 +41,41 @@ public class NotficationActivity extends AppCompatActivity implements Playable {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            NotificationChannel channel = new NotificationChannel(DoNotification.ChannelId,
-                    getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW);
-
-            nm = getSystemService(NotificationManager.class);
-
-            assert nm != null;
-            nm.createNotificationChannel(channel);
-
+            createChannel();
 
             registerReceiver(br, new IntentFilter("TRACKS_TRACKS"));
             startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
         }
 
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        play.setOnClickListener(view -> {
 
-                if(isPlaying) {
-                    onTrackPause();
-                } else {
-                    onTrackPlay();
-                }
+            if(isPlaying) {
+                onTrackPause();
+            } else {
+                onTrackPlay();
             }
         });
+    }
+
+    private void createChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationChannel channel = new NotificationChannel(DoNotification.ChannelId,
+                    getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+
+            nm = getSystemService(NotificationManager.class);
+
+            assert nm != null;
+            nm.createNotificationChannel(channel);
+        }
     }
 
     private void populateTracks() {
 
         tracks = new ArrayList<>();
 
-        tracks.add(new Track("John Williamns", "Arrivial of Baby Harry", R.drawable.ghost));
+        tracks.add(new Track("John Williamns", "Arrivial of Baby Harry", R.drawable.hp));
     }
 
     BroadcastReceiver br = new BroadcastReceiver() {
@@ -78,6 +84,7 @@ public class NotficationActivity extends AppCompatActivity implements Playable {
 
             String action = intent.getExtras().getString("actionname");
 
+            //if (action.equals(DoNotification.Play)) {
             if (DoNotification.Play.equals(action)) {
                 if (isPlaying) {
                     onTrackPause();
@@ -87,6 +94,16 @@ public class NotficationActivity extends AppCompatActivity implements Playable {
             }
         }
     };
+
+    @Override
+    public void onTrackPrevious() {
+
+        position--;
+
+        DoNotification.doNotification(NotficationActivity.this, tracks.get(position),
+                R.drawable.ic_pause_not, position, tracks.size()-1);
+        title.setText(tracks.get(position).getTitle());
+    }
 
     @Override
     public void onTrackPlay() {
@@ -108,6 +125,17 @@ public class NotficationActivity extends AppCompatActivity implements Playable {
         title.setText(tracks.get(position).getTitle());
 
         isPlaying = false;
+
+    }
+
+    @Override
+    public void onTrackNext() {
+
+        position++;
+
+        DoNotification.doNotification(NotficationActivity.this, tracks.get(position),
+                R.drawable.ic_pause_not, position, tracks.size()-1);
+        title.setText(tracks.get(position).getTitle());
 
     }
 

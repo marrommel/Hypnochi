@@ -3,13 +3,18 @@ package com.example.hypnochi;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +32,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.hypnochi.Service.OnClearFromRecentService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +47,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class StartScreen extends AppCompatActivity {
+public class StartScreen extends AppCompatActivity implements Playable{
 
     private Map<String, Integer> startTime = new HashMap<>();
     private final String startTime_api_url = "https://scivolemo.000webhostapp.com/AppOpening/opening_api.php?authentification=p97Fg5b3HkJ5";
@@ -51,6 +57,12 @@ public class StartScreen extends AppCompatActivity {
     private TextView showBeginnsText;
 
     private RemainingTimeViewModel remainingTimeViewModel;
+
+    NotificationManager nm;
+    List<Track> tracks;
+    int position = 0;
+    boolean beginningCondition = false;
+    boolean isPlaying = true;
 
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
@@ -78,6 +90,17 @@ public class StartScreen extends AppCompatActivity {
 
         remainingTimeText = findViewById(R.id.remaining_time_text);
         showBeginnsText = findViewById(R.id.show_beginns_text);
+
+        tracks = new ArrayList<>();
+        tracks.add(new Track("John Williamns", "Arrivial of Baby Harry", R.drawable.hp));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            createChannel();
+
+            registerReceiver(br, new IntentFilter("TRACKS_TRACKS"));
+            startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
+        }
 
         if (!checkInternetPermission()) {
             requestInternetPermission();
@@ -132,8 +155,26 @@ public class StartScreen extends AppCompatActivity {
                         AssetFileDescriptor afd = getAssets().openFd("main_theme.mp3");
                         MediaPlayer openingMusicPlayer = new MediaPlayer();
                         openingMusicPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                        openingMusicPlayer.prepare();
-                        openingMusicPlayer.start();
+
+                        // eventuell unnötig
+                        if (!beginningCondition) {
+                            openingMusicPlayer.prepare();
+                            openingMusicPlayer.start();
+
+                            beginningCondition=true;
+                        }
+
+                        onTrackPlay();
+
+                        /*if (isPlaying) {
+                            onTrackPlay();
+                            if(!openingMusicPlayer.isPlaying()) {
+                                //openingMusicPlayer.start();
+                            }
+                        } else {
+                            onTrackPause();
+                            //openingMusicPlayer.stop();
+                        }*/
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -255,6 +296,99 @@ public class StartScreen extends AppCompatActivity {
     private void requestModifyAudioSettingsPermissio() {
         requestPermissionLauncher.launch(Manifest.permission.MODIFY_AUDIO_SETTINGS);
     }
+
+    private void createChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationChannel channel = new NotificationChannel(DoNotification.ChannelId,
+                    getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+
+            nm = getSystemService(NotificationManager.class);
+
+            assert nm != null;
+            nm.createNotificationChannel(channel);
+        }
+    }
+
+    BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String action = intent.getExtras().getString("actionname");
+
+            try {
+                AssetFileDescriptor afd = getAssets().openFd("main_theme.mp3");
+                MediaPlayer openingMusicPlayer = new MediaPlayer();
+                openingMusicPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+
+                // Hier müssen Play & Pause gehändelt werden
+                if (DoNotification.Play.equals(action)) {
+                    if (isPlaying && openingMusicPlayer.isPlaying()) {
+                        onTrackPause();
+
+                        openingMusicPlayer.stop();
+                        openingMusicPlayer.pause();
+                    } else if(!isPlaying){
+                        onTrackPlay();
+                        if(!openingMusicPlayer.isPlaying()) {
+                            openingMusicPlayer.prepare();
+                            openingMusicPlayer.start();
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //if (action.equals(DoNotification.Play)) {
+        }
+    };
+
+    @Override
+    public void onTrackPrevious() {
+
+        position--;
+
+        DoNotification.doNotification(StartScreen.this, tracks.get(position),
+                R.drawable.ic_pause_not, position, tracks.size()-1);
+    }
+
+    @Override
+    public void onTrackPlay() {
+
+        DoNotification.doNotification(StartScreen.this, tracks.get(position),
+                R.drawable.ic_pause_not, position, tracks.size()-1);
+
+        /*try {
+            AssetFileDescriptor afd = getAssets().openFd("main_theme.mp3");
+            MediaPlayer openingMusicPlayer = new MediaPlayer();
+            openingMusicPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            openingMusicPlayer.prepare();
+            openingMusicPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+        isPlaying = true;
+    }
+
+    @Override
+    public void onTrackPause() {
+
+        DoNotification.doNotification(StartScreen.this, tracks.get(position),
+                R.drawable.ic_play_not, position, tracks.size()-1);
+
+        isPlaying = false;
+    }
+
+    @Override
+    public void onTrackNext() {
+        position++;
+
+        DoNotification.doNotification(StartScreen.this, tracks.get(position),
+                R.drawable.ic_pause_not, position, tracks.size()-1);
+    }
+
 
 
 }
